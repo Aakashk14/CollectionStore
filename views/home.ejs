@@ -1,0 +1,241 @@
+<html>
+
+<head>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script> <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <style>
+        body{
+            margin: 0;
+        }
+        .header{
+            position: sticky;
+            height: 50px;
+            background-color: rgb(24, 82, 88);
+            top: 0;
+
+        }
+        .header p,.header a{
+            display: inline-block;
+            margin: 10px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+
+        }
+        a{
+            text-decoration: none;
+        }
+        .banner{
+            position: absolute;
+            left:40%;
+            top:20%;
+        }
+        .banner img{
+            margin-top: 10px;
+            cursor: pointer;
+            margin-left: 20px;
+        }
+        .banner button{
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+        .products div{
+            background-color: rgba(248, 246, 246, 0.622);
+            width: 150px;
+            border-radius: 4px;
+            height: 400px;
+            margin-top: 10px;
+            border-color: green;
+        }
+        .products div{
+            display: inline-block;
+        }
+        .products div p{
+            margin-left: 30px;
+        }
+        .main div{
+            display: inline-block;
+            height: 200px;
+            margin: 10px;
+        }
+        .twitter{
+            position: relative;
+            bottom:0px;
+        }
+        .main{
+            position:absolute;
+            left:100px;
+            top:150px;
+        }
+        .main p{
+            margin: 10px;
+        }
+        .main div:hover{
+            background-color: aqua;
+        }
+        .tools span{
+            display: block;
+            margin-top: 2px;
+            background-color: rgb(4, 35, 28);
+            width: 100px;
+            border-radius: 4px;
+            color: white;
+            padding: 4px;
+            cursor: pointer;
+        }
+        .tools{
+            position: absolute;
+            left:56px;
+            top:34px
+        }
+        .tools span:hover{
+            background-color: rgb(187, 117, 117);
+        }
+    </style>
+</head><script>
+  $(()=>{
+    $("#toolbar_e").on('click',function(){
+                    
+                       
+                    if(document.getElementById("D_s")){
+                     $("#D_s").insertAfter(".item2 b")
+                    }else{
+                        $("<p>Not Running</p>").insertAfter(".item2 b")
+                    }
+                         
+                
+                     if(document.getElementById("t_s")){
+                     $("#t_s").insertAfter(".item1 b")
+                     }else{
+                        $("<p>Not Running</p>").insertAfter(".item1 b")
+                    }
+ 
+                     
+                 })
+                 $("#subscriptions").on('click',function(){
+                  $.ajax({
+                    method:"get",
+                    url:"/my/subscriptions",
+                    success:function(response){
+                      let u = document.createElement("ul");
+                     if(response=="error"){
+                       Swal.fire("No Telegram Subscription")
+                       return
+                     }
+                      for(x of response){
+                        let li = document.createElement("li");
+                        let t = document.createTextNode(x+"<br>")
+                        li.append(t);
+                        u.append(li)
+
+                      }
+                      Swal.fire({html:`${u.textContent}`})
+                      //console.log(response)
+                    }
+                  })
+                 })
+                 $("#tools").on('click',()=>{
+                   
+                   $(".tools").toggle()
+                 })
+                 $("#not_avail").on('click',()=>{
+                   Swal.fire("This tool is currently Down")
+                 })
+
+  })
+</script>
+<body>
+  <div class="header">
+    <a href="/home">Home</a>
+    <p id="tools">Tools</p>
+  <!-- <p id="toolbar_e" data-bs-toggle="modal" data-bs-target="#EventsModal">Events</p> -->
+   <a href="/logout">Logout</p>
+
+
+   <a href="/my/settings">Settings</a>
+</div>
+    <div class="tools" style="display: none;">
+      <span onclick="location.href='/services/net/d/'">Subdomains</span>
+      <span style="opacity:0.2" id="not_avail">Subnet Scan</span>
+      <span onclick="location.href='/services/t'">Twitter</span>
+      
+
+  
+  </div>
+    <div class="hidden" style="display: none;">
+      <% for(x of services[0].services) { %>
+      <% if(x.Name=="Domains" && x.Status==true){ %>
+       <button id="D_s" type="button" class="btn btn-primary btn-sm">Running</button>
+      <% } else if(x.Name=="Twitter" && x.Status==true) {%> 
+           <button id="t_s" type="button" class="btn btn-primary btn-sm">Running</button>
+       <%} %>
+      <% } %>
+   
+   </div>
+<div class="main">
+
+    <div class="twitter border" onclick="location.href='/services/t/'">
+        <img src="/static/twitter.png" height="120">
+        <p>Subscribe to Multiple Hashtags</p>
+
+    </div>
+    <div class="Site border" onclick="location.href='/services/net'">
+        <img src="/static/download.png" height="120">
+        <p>Network Data , Domains & Subnet Scan</p>
+    </div>
+
+</div>
+<div class="modal fade" id="EventsModal" tabindex="-1" aria-labelledby="EventsModal" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="passwordModal">Events</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="password">
+          
+            <% if(services.length >0){ %>
+
+              <% if(services[0].Domains) {%>
+            <div class="item border">
+                <b>Twitter : </b> <button type="btn" class="btn btn-secondary btn-sm">Stop</button>
+            </div>
+          <%}else{ %>
+            <div class="item border">
+              <b>Twitter: </b><p>Not Running</p>
+            </div>
+          <% } %>
+           <% if(services[0].Twitter){ %>
+            <div class="item border">
+              <b>Twitter :</b><button type="btn" class="btn btn-secondary btn-sm">Stop</button>
+            </div>
+          <%}else{ %>
+            <div class="item border">
+                <b>Subdomains : </b><p>Not Running</p>
+
+            </div>
+        <%} %>
+        <% }%>
+           </div>
+           
+             </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    </body>
+    </html>

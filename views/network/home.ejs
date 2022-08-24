@@ -1,0 +1,213 @@
+<html>
+
+<head>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script> <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/static/css/header.css">
+<script src="/static/header.js"></script>
+
+    <style>
+        body{
+            margin: 0;
+        }
+        .header{
+            position: sticky;
+            height: 50px;
+            background-color: rgb(24, 82, 88);
+
+        }
+        .header p,.header a{
+            display: inline-block;
+            margin: 10px;
+            color: white;
+            cursor: pointer;
+            z-index: 2;
+        }
+        a{
+            text-decoration: none;
+        }
+        .search{
+            position: absolute;
+            top:30%;
+            left:40%;
+           
+        }
+        .search input[type=text]{
+            width: 300px;
+            border-radius: 4px;
+            height: 40px;
+        }
+        .main div{
+            display: inline-block;
+            border: 1px solid;
+            height: 100px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        
+        .main div:hover{
+            background-color: rgb(128, 128, 150);
+        }
+        .main div p{
+            padding: 10px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        .path{
+            background-color: red;
+        }
+       
+        </style>
+        </head>
+<script>
+    $(()=>{
+        $("#btn").on('click',()=>{
+            let tm = $("#search").val()
+
+            if(tm.length==0){
+                alert("write something")
+                return
+            }
+          
+
+        })
+        $("#toolbar_e").on('click',function(){
+                    
+                       
+                    if(document.getElementById("D_s")){
+                     $("#D_s").insertAfter(".item2 b")
+                    }else{
+                        $("<p>Not Running</p>").insertAfter(".item2 b")
+                    }
+                         
+                
+                     if(document.getElementById("t_s")){
+                     $("#t_s").insertAfter(".item1 b")
+                     }else{
+                        $("<p>Not Running</p>").insertAfter(".item1 b")
+                    }
+ 
+                     
+                 })
+                 $("#subscriptions").on('click',function(){
+                  $.ajax({
+                    method:"get",
+                    url:"/my/subscriptions",
+                    success:function(response){
+                      let u = document.createElement("ul");
+
+                      for(x of response){
+                        let li = document.createElement("li");
+                        let t = document.createTextNode(x+"<br>")
+                        li.append(t);
+                        u.append(li)
+
+                      }
+                      let li = document.createElement("li");
+                      let t = document.createTextNode("Facebook"+"<br>")
+                      li.append(t)
+                      u.append(li)
+                      Swal.fire({html:`${u.textContent}`})
+                    }
+                  })
+                 })
+    })
+    function subnet(){
+        Swal.fire("This Service is currently Reached limit")
+    }
+</script>
+<body>
+  <div class="header">
+    <a href="/home">Home</a>
+    <p id="tools">Tools</p>
+  <!-- <p id="toolbar_e" data-bs-toggle="modal" data-bs-target="#EventsModal">Events</p> -->
+   <a href="/logout">Logout</p>
+
+
+   <a href="/my/settings">Settings</a>
+</div>
+<div class="tools" style="display: none;">
+ <span onclick="location.href='/services/net/d/'">Subdomains</span>
+ <span style="opacity:0.6">Subnet Scan</span>
+ <span onclick="location.href='/services/t'">Twitter</span>
+ 
+
+
+</div>
+    <div class="hidden" style="display: none;">
+      <% for(x of services[0].services) { %>
+      <% if(x.Name=="Domains" && x.Status==true){ %>
+       <button id="D_s" type="button" class="btn btn-primary btn-sm">Running</button>
+      <% } else if(x.Name=="Twitter" && x.Status==true) {%> 
+           <button id="t_s" type="button" class="btn btn-primary btn-sm">Running</button>
+       <%} %>
+      <% } %>
+   
+   </div>
+    <!-- <div class="path">
+        <p>Your Path <a href="/home">Home</a>/<a href="Network">Network</a>
+    </div> -->
+<div class="main">
+    <div id="d" onclick="location.href='/Services/net/d'">
+<p><b>Collect Subdomains</b></p>
+
+</div>
+
+ <div id="port" style="opacity:0.6;" onclick="subnet()">
+<p>Subnet Scan , Deep Scan </p>
+</div>
+</div>
+<div class="modal fade" id="EventsModal" tabindex="-1" aria-labelledby="EventsModal" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="passwordModal">Events</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="password">
+          
+           
+
+              <% if(services[0].Domains) {%>
+            <div class="item border">
+                <b>Twitter : </b> <button type="btn" class="btn btn-secondary btn-sm">Stop</button>
+            </div>
+          <%}else{ %>
+            <div class="item border">
+              <b>Twitter: </b><p>Not Running</p>
+            </div>
+          <% } %>
+           <% if(services[0].Twitter){ %>
+            <div class="item border">
+              <b>Twitter :</b><button type="btn" class="btn btn-secondary btn-sm">Stop</button>
+            </div>
+          <%}else{ %>
+            <div class="item border">
+                <b>Subdomains : </b><p>Not Running</p>
+
+            </div>
+        <%} %>
+    
+           </div>
+           
+             </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+
+</body>
+</html>

@@ -1,0 +1,549 @@
+<html>
+
+
+
+<link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script
+src="https://code.jquery.com/jquery-3.6.0.min.js"
+integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+<link rel="stylesheet" href="/static/css/header.css">
+<script src="/static/header.js"></script>
+
+<style>
+    body {
+        margin: 0;
+  background: #e6ecf0;
+  font-family: 'Asap', sans-serif;
+  font-family: 'Roboto', sans-serif;
+
+}
+.header{
+            position: sticky;
+            height: 50px;
+            background-color: rgb(24, 82, 88);
+            top:0;
+
+        }
+        .header p,.header a{
+            display: inline-block;
+            margin: 10px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+
+        }
+        a{
+            text-decoration: none;
+        }
+img {
+  max-width:50%;
+}
+.avator {
+  border-radius:100px;
+  width:48px;
+  margin-right: 15px;
+}
+
+
+.tweet-wrap {
+  max-width:590px;
+  background: #fff;
+  margin: 0 auto;
+  margin-top: 50px;
+  border-radius:3px;
+  padding: 30px;
+  border-bottom: 1px solid #e6ecf0;
+  border-top: 1px solid #e6ecf0;
+}
+
+.tweet-header {
+  display: flex;
+  align-items:flex-start;
+  font-size:14px;
+}
+.tweet-header-info {
+  font-weight:bold;
+}
+.tweet-header-info span {
+  color:#657786;
+  font-weight:normal;
+  margin-left: 5px;
+}
+.tweet-header-info p {
+  font-weight:normal;
+  margin-top: 5px;
+  
+}
+.tweet-img-wrap {
+  padding-left: 60px;
+}
+
+.tweet-info-counts {
+  display: flex;
+  margin-left: 60px;
+  margin-top: 10px;
+}
+.tweet-info-counts div {
+  display: flex;
+  margin-right: 20px;
+}
+.tweet-info-counts div svg {
+  color:#657786;
+  margin-right: 10px;
+}
+@media screen and (max-width:430px){
+  body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .tweet-header {
+    flex-direction:column;
+  }
+  .tweet-header img {
+    margin-bottom: 20px;
+  }
+  .tweet-header-info p {
+    margin-bottom: 30px;
+  }
+  .tweet-img-wrap {
+    padding-left: 0;
+  }
+  .tweet-info-counts {
+  display: flex;
+  margin-left: 0;
+}
+.tweet-info-counts div {
+  margin-right: 10px;
+}}
+.functions{
+    position: fixed;
+    top:100px;
+    width: 300px;
+
+    right:100px;
+}
+
+.search{
+  position: relative;
+  left:500px;
+  top:30px;
+  width: 400px;
+}
+/* .password{
+    position: absolute;
+    left:200px;
+    top:200px;
+    width: 300px;
+} */
+.password div{
+    height: 50px;
+}
+#imp{
+  position: relative;
+  left:500px;
+  top:40px;
+  color:green;
+}
+.password button{
+    float: right;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+.password p{
+    display:inline-block;
+    float: right;
+    margin-right: 10px;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+
+
+
+
+
+</style>
+<script>
+  var fired=0;
+    $(()=>{
+
+
+        const socket=io()
+
+       
+      socket.on("new tweet",(data)=>{
+        
+var m = document.getElementsByClassName("results")[0]
+$(".results").empty()
+        for(x of data){
+        var dv = document.createElement("div")
+dv.className="tweet-wrap"
+let dv2=document.createElement("div")
+dv2.className="tweet-header"
+let dv3=document.createElement("div")
+dv3.className="tweet-header-info"
+
+let tx=document.createTextNode("@"+x.id)
+dv3.appendChild(tx)
+dv2.append(dv3)
+
+let pn = document.createElement("p")
+dv3.appendChild(pn)
+
+pn.innerText=x.tweet
+
+dv.append(dv2)
+m.append(dv)
+
+
+        }
+        $(".box").empty()
+        document.getElementsByClassName("box")[0].append(m)
+
+  
+      })
+      setInterval(() => {
+      let tm = $("#search").val()
+        if(fired==1){
+          tm?socket.emit("update tweet",tm):socket.emit("update tweet")
+          
+        }
+        }, 2000);
+        
+
+        $("#btn").on('click',()=>{
+            let tm = $("#search").val()
+        
+            if(tm.length==0){
+                alert("write something")
+                return
+            }else if(tm.indexOf("#")){
+              alert("Please write Hashtags without hash")
+              return
+            }
+          
+
+            $.ajax({
+                method:"get",
+                url:"/api/t",
+                data:{data:tm},
+                success:function(response){
+
+                  fired=1;
+               var m = document.getElementsByClassName("results")[0]
+                  for(x of response){
+                  let dv = document.createElement("div")
+dv.className="tweet-wrap"
+let dv2=document.createElement("div")
+dv2.className="tweet-header"
+let dv3=document.createElement("div")
+dv3.className="tweet-header-info"
+
+let tx=document.createTextNode("@"+x.id)
+dv3.appendChild(tx)
+dv2.append(dv3)
+
+let pn = document.createElement("p")
+dv3.appendChild(pn)
+
+pn.innerText=x.tweet
+
+dv.append(dv2)
+m.append(dv)
+
+
+                  }
+                  $(".box").empty()
+                 document.getElementsByClassName("box")[0].append(m)
+
+                  
+                }
+            })
+    })
+
+    
+    $("#twitter_stop").on('click',function(){
+      
+
+      $.ajax({
+        url:"/api/events/stop",
+        data:{data:"Twitter"},
+        method:"post",
+        success:function(response){
+
+        }
+      })
+    })
+    $("#domains_stop").on('click',function(){
+      
+
+      $.ajax({
+        url:"/api/events/stop",
+        data:{data:"Domains"},
+        method:"post",
+        success:function(response){
+
+        }
+      })
+    })
+    $("#toolbar_e").on('click',function(){
+                    
+                       
+                    if(document.getElementById("D_s")){
+                     $("#D_s").insertAfter(".item2 b")
+                    }else{
+                        $("<p>Not Running</p>").insertAfter(".item2 b")
+                    }
+                         
+                
+                     if(document.getElementById("t_s")){
+                     $("#t_s").insertAfter(".item1 b")
+                     }else{
+                        $("<p>Not Running</p>").insertAfter(".item1 b")
+                    }
+ 
+                     
+                 })
+
+                 $("#subscribe_done").on('click',function(){
+                  let tm = $("#search").val();
+                  if(tm.length==0){
+                    alert("Search Some Hashtag")
+                    return
+                  }
+
+
+                
+                   $.ajax({
+                     url:"/api/t/activate",
+                     method:"post",
+                     data:{data:tm},
+                     success:function(response){
+                       if(response!="error"){
+
+                          $("._subs").hide()
+                          $("._sub_done").show()
+                     }else{
+                       Swal.fire("Something went wrong")
+                     }
+                    }
+                   })
+                 })
+                 $("#subscriptions").on('click',function(){
+                  $.ajax({
+                    method:"get",
+                    url:"/my/subscriptions",
+                    success:function(response){
+                      let u = document.createElement("ul");
+
+                      for(x of response){
+                        let li = document.createElement("li");
+                        let t = document.createTextNode(x+"<br>")
+                        li.append(t);
+                        u.append(li)
+
+                      }
+                    
+                      Swal.fire({html:`${u.textContent}`})
+                    }
+                  })
+                 })
+                 
+               
+
+
+})
+
+window.addEventListener('DOMContentLoaded',(e)=>{
+let m = document.getElementsByClassName("hidden_e")[0].querySelector("#note").innerHTML
+
+if(m==1){
+document.getElementsByClassName("already_subs")[0].style.display=""
+
+  fired=1;
+
+}else{
+  document.getElementsByClassName("_subs")[0].style.display=""
+}
+})
+</script>
+<body>
+
+  <div class="header">
+    <a href="/home">Home</a>
+    <p id="tools">Tools</p>
+  <!-- <p id="toolbar_e" data-bs-toggle="modal" data-bs-target="#EventsModal">Events</p> -->
+   <a href="/logout">Logout</p>
+
+
+   <a href="/my/settings">Settings</a>
+</div>
+<div class="tools" style="display: none;">
+ <span onclick="location.href='/services/net/d/'">Subdomains</span>
+ <span style="opacity:0.6">Subnet Scan</span>
+ <span onclick="location.href='/services/t'">Twitter</span>
+ 
+
+
+</div>
+<div class="hidden" style="display: none;">
+  <% for(x of services[0].services) { %>
+    <% if(x.Name=="Domains" && x.Status==true){ %>
+     <button id="D_s" type="button" class="btn btn-primary btn-sm">Running</button>
+    <% } else if(x.Name=="Twitter" && x.Status==true) {%> 
+         <button id="t_s" type="button" class="btn btn-primary btn-sm">Running</button>
+     <%} %>
+    <% } %>
+
+</div>
+
+    <div class="search">
+    <i style="font-size:14px;"> Don't add hashes just type words ( hashtag1,hashtag2)</i>
+        <input type="text" id="search" name="search" placeholder="hashtag1,hashtag2">
+        <input type="button" id="btn" value="Search Hashtags">
+    </div>
+  
+
+    <div class="functions">
+      <button type="btn" id="subs" class="btn btn-primary" data-bs-target="#SubscribeModal" data-bs-toggle="modal">Telegram</button>
+      </div>
+   
+<div class="hidden_e" style="display: none;">
+<% let active=0; %>
+  <% for(let i=0;i<services[0].services.length;i++) {%>
+
+
+ <%  if(services[0].services[i].Name=="Twitter" && services[0].services[i].Status==true){ %>
+
+<p id="note">1</p>
+<% active=1 %>
+  <% } %>
+ <% } %> 
+  <% if(active==0){ %>
+  <p id="note">0</p>
+<% } %>
+    
+    </div>
+    
+<div class="box">
+  <% if(tweets!=0) {%>
+    <i id="imp"> You are subsribed to following tweets</i>
+  <% } %>
+
+    <div class="results"> 
+      
+      <% if(tweets!=0) {%> 
+        
+        <% for(x of tweets) {%>
+
+      <div class="tweet-wrap">
+        <div class="tweet-header">
+          <div class="tweet-header-info">
+            <span>@<%=x.id%></span>
+              <p> <%=x.tweet%></p>
+            </div>
+          </div>
+          </div>
+        <% } %>
+        <% }%>
+    </div>
+    </div>
+
+    
+
+ 
+
+  
+   
+  <div class="modal fade" id="EventsModal" tabindex="-1" aria-labelledby="EventsModal" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="passwordModal">Events</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="password">
+          
+        
+
+              <% if(services[0].Domains) {%>
+            <div class="item border">
+                <b>Twitter : </b> <button type="btn" class="btn btn-secondary btn-sm">Stop</button>
+            </div>
+          <%}else{ %>
+            <div class="item border">
+              <b>Twitter: </b><p>Not Running</p>
+            </div>
+          <% } %>
+           <% if(services[0].Twitter){ %>
+            <div class="item border">
+              <b>Twitter :</b><button type="btn" class="btn btn-secondary btn-sm">Stop</button>
+            </div>
+          <%}else{ %>
+            <div class="item border">
+                <b>Subdomains : </b><p>Not Running</p>
+            </div>
+          <%} %>
+           </div>
+           
+             </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+  <div class="modal fade" id="SubscribeModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="passwordModal">Events</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="subcribe-box">
+
+          <div class="_subs" style="display: none;">
+          <i id="note">You can subscribe to only one Event of each Tools!!!</i>
+           <button type="btn" id="subscribe_done" style="margin-bottom: 6px;margin-top:6px;" class="btn btn-secondary btn-sm">Subscribe to this Event</button>
+          </div>
+          <div class="_sub_done" style="display: none;">
+          <i id="note" style="color: green;margin-top:4px;margin-bottom:4px;">Subscribed Done. You activated this event for web Updates!</i></div>
+          <div class="already_subs" style="display: none;">
+            <i id="note" style="color:green; margin-top:4px;margin-bottom:4px;">You are already Subscribed to one Twitter Event</i>
+          
+          </div>
+          <h6 style="text-decoration: underline; margin-top:10px;"> How get your Subscribe tweets on Telegram</h6>
+           <ul>
+             <li>Search Some Hashtags then click above Subscribe Button</li>
+            
+           <li> Authenticate yourself on Telegram Bot</li>
+           <li>To Authenticate </li>
+             <li>First Send /Start to start chat with Bot ( Bot username - @data_techbot)</li>
+             <li>Then Send Your key /key123 to Login</li>
+           
+           <li>After Authentication You can Send commands To Follow event </li>
+           <li> To Follow the subscribed twitter data send /Twitter active</li>
+<ul>
+         
+           </div>
+           
+             
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+</body>
+</html>

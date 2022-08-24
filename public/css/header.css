@@ -1,0 +1,18 @@
+.tools span{
+    display: block;
+    margin-top: 2px;
+    background-color: rgb(4, 35, 28);
+    width: 100px;
+    border-radius: 4px;
+    color: white;
+    padding: 4px;
+    cursor: pointer;
+}
+.tools{
+    position: absolute;
+    left:56px;
+    top:34px
+}
+.tools span:hover{
+    background-color: rgb(187, 117, 117);
+}

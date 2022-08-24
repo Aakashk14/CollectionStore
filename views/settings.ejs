@@ -1,0 +1,426 @@
+<html>
+
+<head>
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script> <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <style>
+        body{
+            margin: 0;
+        }
+        .header{
+            position: sticky;
+            height: 50px;
+            background-color: rgb(24, 82, 88);
+
+        }
+        .header p,.header a{
+            display: inline-block;
+            margin: 10px;
+            color: white;
+            cursor: pointer;
+        }
+        a{
+            text-decoration: none;
+        }
+        .toolbar input{
+            background-color: white;
+        }
+        .toolbar {
+            height: 30px;
+            width: 400px;
+            position: absolute;
+            left:300px;
+            top:100px;
+            
+        }
+        .profile{
+            width: 700px;
+            position: relative;
+            top:100px;
+            left:300px;
+            height: 400px;
+            background-color: gray;
+        }
+        .profile input{
+            display: block;
+            margin: 10px;
+            width: 300px;
+
+        }
+        .toolbar input[data=show]{
+            background-color: blue;
+            color: white;
+        }
+        div[data=hide]{
+            display: none;
+        }
+        
+
+        .text_details{
+            position: relative;
+            top:50px;
+            width: 300px;
+        }
+        .text_details button{
+            position: relative;
+            left:60px;
+
+        }
+        .keys{
+            position: absolute;
+            left:300px;
+            top:200px;
+            width: 400px;
+            height: 100px;
+        }
+        .keys h6{
+            width: 100px;
+        }
+        
+        .events{
+            position: absolute;
+    left:200px;
+    top:200px;
+    width: 300px;
+        }
+        .events input[type=button]{
+            height: 30px;
+            width: 100px;
+            float: right;
+            background-color: white;
+        }
+        .password input{
+            display: block;
+            margin: 10px;
+            width: 200px;
+        }
+        .password button{
+            position: relative;
+            left:50px;
+        }
+        .events div{
+            height: 50px;
+        }
+        .keys .key{
+            width: 200px;
+            display: inline-block;
+            
+        }
+        .password{
+            height: 200px;
+        }
+     .password div p{
+         display: inline-block;
+     }
+     .row{
+      display:flex
+  }
+  .row div{
+      flex: 1;
+    
+  }
+  .events div{
+    width: 400px;
+      height: 60px;
+      background-color: white;
+  }
+  .password div{
+      width: 400px;
+      height: 60px;
+      background-color: white;
+  }
+
+        </style>
+        </head>
+        <script>
+            $(()=>{
+                if(location.hash){
+                    let el = location.hash.split("#")[1]
+                  $("."+el).attr("data","show")
+                    $("#"+el).attr("data","show")
+                        
+                    }else{
+                        $(".profile").attr("data","show")
+                    }
+
+                    
+        
+                $("#change_p").on('click',()=>{
+                    let old_p=document.getElementById("old_p").value
+                    let new_p =document.getElementById("new_p").value;
+                    if(old_p.length==0 || new_p.length==0){
+                        alert("Empty Password!!!")
+                        return
+                    }
+                    $.ajax({
+                        url:"/api/my/password",
+                        method:"post",
+                        data:{old_p:old_p,new_p:new_p},
+                        success:function(response){
+                            if(response.success){
+                                $("#note").show()
+                                setTimeout(function(){
+                                    $("#note").hide()
+
+                                },2000)
+
+                        }
+                    }
+                })
+            })
+             
+               
+                $(".toolbar input[type=button]").on('click',function(){
+                    let tmp = $(this).attr('id')
+                    location.hash=tmp
+                    $(this).attr("data","show")
+                    $(".toolbar input").each(function(){
+                        if($(this).attr('id')!=tmp){
+                            $(this).attr("data","hide")
+                        }
+                    })
+                    
+                if(tmp=="profile"){
+                    $(".keys").hide()
+                    $(".events").hide()
+                    $(".profile").show()
+                   
+                }else if(tmp=="keys"){
+                    $(".profile").hide()
+                    $(".events").hide()
+                    $(".keys").show()
+                }else{
+                    $(".keys").hide()
+                    $(".profile").hide()
+                    $(".events").show()
+                }
+                       
+                
+                   
+                })
+                $("#toolbar_e").on('click',function(){
+                    
+                       
+                   if(document.getElementById("D_s")){
+                    $("#D_s").insertAfter(".item2 b")
+                   }else{
+                       $("<p>Not Running</p>").insertAfter(".item2 b")
+                   }
+                        
+               
+                    if(document.getElementById("t_s")){
+                    $("#t_s").insertAfter(".item1 b")
+                    }else{
+                       $("<p>Not Running</p>").insertAfter(".item1 b")
+                   }
+
+                    
+                })
+         
+            })
+
+            function verify(){
+                if(confirm("are You Sure , you want to update?")){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        </script>
+        <body>
+            <div class="header">
+                <a href="/home">Home</a>
+                <p id="tools">Tools</p>
+              <!-- <p id="toolbar_e" data-bs-toggle="modal" data-bs-target="#EventsModal">Events</p> -->
+               <p id="subscriptions">Events</p>
+               <p id="Logout">Logout</p>
+       
+       
+               <a href="/my/settings">Settings</a>
+           </div>
+           <div class="tools" style="display: none;">
+             <span onclick="location.href='/services/net/d/'">Subdomains</span>
+             <span style="opacity:0.6">Subnet Scan</span>
+             <span onclick="location.href='/services/t'">Twitter</span>
+             
+       
+         
+         </div>
+
+            <div class="toolbar">
+                <input type="button" id="profile" value="Profile">
+                <input type="button" id="keys" value="Keys">
+                <input type="button" id="Events" value="Events">
+            </div>
+            <div class="hidden" style="display: none;">
+               <% for(x of services[0].services) { %>
+               <% if(x.Name=="Domains" && x.Status==true){ %>
+                <button id="D_s" type="button" class="btn btn-primary btn-sm">Running</button>
+               <% } else if(x.Name=="Twitter" && x.Status==true) {%> 
+                    <button id="t_s" type="button" class="btn btn-primary btn-sm">Running</button>
+                <%} %>
+               <% } %>
+            
+            </div>
+<div class="box">
+    
+            <div class="profile" data="hide">
+                <div class="text_details">
+                    <form method="post" onsubmit="return verify()" action="/update/profile/">
+                    <input type="text" name="name"  value="<%= user[0].Name %>">
+                    <input type="text" name="email" value="<%= user[0].email %>">
+                    <button type="btn" id="btn" class="btn btn-primary">Update</button>
+                    <button type="btn" id="change_password" data-bs-toggle="modal" data-bs-target="#passwordModal" class="btn btn-danger">Change Password</button>
+            </form>
+                </div>
+                
+            </div>
+            <div class="keys" data="hide">
+                    Telegram: <p class="key border"><%= keys %></p>
+                   
+
+            </div>
+   
+
+                <div class="events" data="hide">
+                    <div class="row">
+                        <div class="item1 border"><b>Service</b></div>
+                        <div class="item1 border"><b>Web</b></div>
+                        <div class="item1 border"><b>Telegram</b></div>
+                
+                
+                    </div>
+                    <% if(subscriptions.Subscription.length>0) {%>
+                <% for(x of subscriptions.Subscription) {%>
+
+                    
+                    <!-- <div class="row">
+                        <div class="item1 border"><b>Service</b></div>
+                        <div class="item1 border"><b>Web</b></div>
+                        <div class="item1 border"><b>Telegram</b></div>
+                
+                
+                    </div>-->
+                    <div class="row">
+                        <div class="item1 border"><%= x.Service %></div>
+                        
+                        <div class="item1 border">Activated</div>
+                        <% if(x.Status==true) {%>
+                        <div class="item1 border">Activated</div>
+                       <% }else{ %>
+                        <div class="item1 border">Not Activated <img src="/static/edit.png" width="20" height="20" data-bs-toggle="modal" data-bs-target="#SubscribeModal"></div>
+                       <%} %>
+                
+                    </div> 
+               <% }%>
+                <% } %>
+                
+                    </div>
+        
+    
+
+            </div>
+            <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModal" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="passwordModal">Change Password</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="password container">
+                     
+                       <span>Old Password: </span><input type="password" id="old_p" name="old_password">
+                        <span>New Password: </span><input type="password" id="new_p" name="new_password">
+                        <button type="btn" id="change_p" class="btn btn-danger">Change</button>
+                      
+                       <p id="note" style="display:none; background-color:aqua;opacity:0.6;">Password changed......</p>
+                        </div>
+                       
+                         </div>
+                    
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade" id="EventsModal" tabindex="-1" aria-labelledby="EventsModal" aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="passwordModal">Events</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="password">
+                      
+                        <div class="item1 border">
+                         <b>Twitter : </b> <!--button type="btn" class="btn btn-secondary btn-sm">Stop</button> -->
+                        </div>
+                    
+                        <div class="item2 border">
+                         <b>Subdomains : </b>
+
+                        </div>
+                       </div>
+                       
+                         </div>
+                    
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade" id="SubscribeModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+                <div class="modal-dialog modal-md">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="passwordModal">Events</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="subcribe-box">
+            
+                      <!-- <div class="_subs" style="display: none;">
+                      <i id="note">You can subscribe to only one Event of each Tools!!!</i>
+                       <button type="btn" id="subscribe_done" style="margin-bottom: 6px;margin-top:6px;" class="btn btn-secondary btn-sm">Subscribe to this Event</button>
+                      </div>
+                      <div class="already_subs" style="display: none;">
+                        <i id="note" style="color:green; margin-top:4px;margin-bottom:4px;">You are already Subscribed to one Twitter Event</i>
+                      
+                      </div> -->
+                      <h6 style="text-decoration: underline; margin-top:10px;"> How get Results on Telegram</h6>
+                       <ul>
+                       <li> Authenticate yourself on Telegram Bot</li>
+                       <li>To Authenticate </li>
+                         <li>First Send /Start to start chat with Bot</li>
+                         <li>Then Send Your key /key123</li>
+                       
+                       <li>After Authentication you will get all the tweets there</li>
+            <ul>
+                     
+                       </div>
+                       
+                         
+                    
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+        </body>
+        
+
+        </html>

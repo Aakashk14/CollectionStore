@@ -1,0 +1,51 @@
+const express = require('express')
+const router = express.Router()
+const bot_db = require("../Database/queries/bot_queries")
+const service_db=require("../Database/queries/services")
+const fetch_tweets = require("../Main/twitter/fetch")
+const fs = require('fs')
+
+
+ router.get("/tel/api/*",(req,res,next)=>{
+
+     if(req.ip=="127.0.0.1"){
+ next()
+     }else{
+         res.send("Not Allowed")
+     }
+ })
+router.get("/tel/api/login",async(req,res)=>{
+    await bot_db.new_telbot(req.query.key,req.query.user).then((data)=>{
+        res.json({"user":data})
+    })
+})
+
+router.get("/tel/api/service",async(req,res)=>{
+await service_db.single_service(req.query.user,req.query.service).then((data)=>{
+    res.send(data)
+})
+})
+
+router.get("/tel/api/log/twitter",async(req,res)=>{
+    fs.readFile(`./Storage/${req.query.user}/twitter_config.json`,'utf-8',(err,data)=>{
+
+        res.send(data)
+    })
+})
+
+
+router.get("/tel/api/twitter/fetch",async(req,res)=>{
+await fetch_tweets(req.query.values).then((data)=>{
+    res.send(data)
+})
+})
+
+router.get("/tel/api/twitter/Subscribe",(req,res)=>{
+    bot_db.tel_subscription(req.query.user,"Twitter",true)
+})
+
+router.get("/tel/api/twitter/unsubscribe",(req,res)=>{
+bot_db.tel_subscription(req.query.user,req.query.service,false)
+
+})
+module.exports=router;
